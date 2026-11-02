@@ -1,0 +1,56 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# ---- 虚拟环境 ----
+.venv/
+venv/
+
+# ---- 密钥与本地配置(绝不提交)----
+# .env 里有 LLM API Key;只放模板 .env.example 进仓库
+.env
+.env.*
+!.env.example
+
+# ---- 运行时数据(生产库 / 公众号登录会话 / 生成的封面)----
+# ⚠️ data/storage_state.json 是公众号登录 cookie,泄露等于交出账号
+data/
+*.db
+*.db-wal
+*.db-shm
+
+# ---- 截图(docs/screenshots 等)----
+# 截图里是真实后台画面(含公众号后台),不入库;需要展示时再单独挑选提交
+screenshots/
+*.png
+*.jpg
+*.jpeg
+!docs/assets/**/*.png
+
+# ---- 前端依赖与构建产物(可由 package.json 复现)----
+node_modules/
+
+# ---- 测试与日志 ----
+.pytest_cache/
+.coverage
+htmlcov/
+logs/
+*.log
+
+# ---- 内部开发记忆(含个人信息与踩坑史,不对外)----
+.workbuddy/
+
+# ---- 系统 / 编辑器 ----
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+
+# ---- bat文件 ---
+start_app.bat
+start_backend.bat

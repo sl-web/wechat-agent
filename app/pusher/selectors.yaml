@@ -1,0 +1,63 @@
+# 公众号后台页面元素选择器(PRD 5.4 选择器集中管理)
+# 页面改版时只需修改本文件,勿散落代码中
+# 格式: name: {by: css|xpath, value: "..."}
+#
+# 约定:value 可用逗号写多个候选(CSS 原生支持并列选择器),
+# Playwright 会选中第一个匹配项,降低改版导致的失效概率。
+
+# 页面改版自检基线:这些元素不存在,基本可判定改版
+version: "v2"
+
+login:
+  username_input: {by: "css", value: "#header .account input"}
+  qrcode_area: {by: "css", value: ".login__type__container__scan"}
+  after_login: {by: "css", value: ".weui-desktop__sidebar, .weui-desktop-account"}
+
+editor:
+  # 首页「新的创作」区块:入口是 .new-creation__menu-item,文案「文章」。
+  # 实测点击后**会打开新标签页**(cgi-bin/appmsg?t=media/appmsg_edit_v2),
+  # 必须切换到新页,否则会一直停在首页等 #title 直到超时。
+  creation_block: {by: "css", value: ".new-creation__menu"}
+  article_item: {by: "css", value: ".new-creation__menu-item"}
+  creation_title: {by: "css", value: ".new-creation__menu-title"}
+  # 编辑器(新标签页,appmsg_edit_v2)
+  # 注意:新版编辑器标题/正文**都是 ProseMirror**,按 DOM 顺序 标题在前、正文在后;
+  # 旧的 <textarea id="title"> 仍在 DOM 里但**不可见**,拿去 fill 会一直等可见而超时。
+  prosemirror: {by: "css", value: ".ProseMirror"}
+  legacy_title_input: {by: "css", value: "#title"}
+  author_input: {by: "css", value: "#author"}
+  summary_input: {by: "css", value: "#js_description"}
+  save_btn: {by: "css", value: "text=保存为草稿"}
+  save_confirm: {by: "css", value: "text=保存成功"}
+
+# 封面设置(2026-09-10 实测旧版编辑器 appmsg_edit_v2 的真实结构)
+#
+# 流程:点封面区 → 弹「选择封面」浮层(从正文选择/从图片库选择/微信扫码上传/AI 配图)
+#       → 从图片库选择 → 素材库弹窗内上传 → 下一步 → 「编辑封面」裁剪页确认 → 预览出现
+cover:
+  # 封面区。点击后弹出选择浮层(appmsg_edit_v2 里是 #js_cover_area)
+  cover_area: {by: "css", value: "#js_cover_area, .select-cover__btn, .setting-group__cover"}
+  # ⚠️ 浮层里的「从图片库选择」必须用 **class** + 只点可见的那个:
+  # 页面里有多个隐藏的重复浮层(首图/次图各一份),用 text=从图片库选择 会命中隐藏实例,
+  # 然后一直等到超时 —— 看上去像"点了没反应"。
+  from_gallery: {by: "css", value: "a.js_imagedialog"}
+  # 素材库弹窗(上传入口在这里面)
+  picker_dialog: {by: "css", value: ".weui-desktop-dialog_img-picker"}
+  # ⚠️ 必须**限定在弹窗内**。页面里第一个 input[type=file] 是**正文工具栏**的图片输入框,
+  # 裸选择器 input[type=file] 会把封面图传进正文图片通道 —— 上传"成功"、封面却没变(真实踩过)。
+  file_input: {by: "css", value: ".weui-desktop-dialog_img-picker .js_upload_btn_container input[type=file]"}
+  # 素材库的「下一步」(上传完成后由灰变绿)
+  next_btn: {by: "css", value: ".weui-desktop-dialog_img-picker button.weui-desktop-btn_primary"}
+  # 「编辑封面」裁剪页的「确认」(直接接受默认裁剪)
+  confirm_btn: {by: "css", value: ".weui-desktop-dialog button.weui-desktop-btn_primary"}
+  # 成功判据:封面预览真的出现(设置前该元素存在但不可见)
+  preview: {by: "css", value: ".js_cover_preview_new, .js_cover_preview_square"}
+
+# 原创声明 / 留言(可选,默认不改动)
+options:
+  original_declare: {by: "css", value: "text=原创"}
+  comment_setting: {by: "css", value: "text=留言"}
+
+draft_list:
+  first_draft: {by: "css", value: ".weui-desktop-card__body .weui-desktop-list__item"}
+  draft_link_attr: {by: "css", value: "href"}
